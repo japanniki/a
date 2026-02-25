@@ -3,18 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中1 学年末考査対策クイズ（数学・美術）</title>
+    <title>中1学年末テスト対策</title>
     <style>
-        :root { --primary-color: #3498db; --bg-color: #f0f4f8; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        #quiz-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; }
-        h1 { color: #2c3e50; font-size: 1.4rem; margin-bottom: 20px; border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; }
-        .progress { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 10px; }
-        .question { font-size: 1.1rem; color: #34495e; margin-bottom: 25px; line-height: 1.5; font-weight: bold; }
-        .option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ecf0f1; border-radius: 12px; cursor: pointer; text-align: left; background: #fff; font-size: 1rem; transition: all 0.2s ease; }
-        .option:hover { border-color: var(--primary-color); background-color: #ebf5fb; }
-        .option.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
-        .option.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
-        #result-area { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
-        #hint-text { font-size: 0.85rem; color: #e67e22; background: #fef5e7; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
-        #next-btn { background
+        body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        #app { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.2rem; color: #333; border-left: 5px solid #3498db; padding-left: 10px; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; text-align: left; font-size: 1rem; }
+        .btn:hover { background: #f9f9f9; }
+        #next-btn { display: none; width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .correct { background: #d4edda !important; border-color: #28a745; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="status" style="font-size: 0.8rem; color: #666;"></div>
+        <h1 id="question">読み込み中...</h1>
+        <div id="answers"></div>
+        <button id="next-btn" onclick="nextQuestion()">次の問題へ</button>
+    </div>
+
+<script>
+    // 資料SCN_20260225_0458.pdfに基づいた20問
+    const questions = [
+        {q:"【数学】2点を通る直線のうち、2点を両端とする部分を何という？", a:["線分","直線","半直線","弧"], c:"線分"},
+        {q:"【数学】1つの頂点から角を半分に分ける線を何という？", a:["角の二等分線","垂直二等分線","接線","母線"], c:"角の二等分線"},
+        {q:"【数学】円周上の2点を結ぶ線分を何という？", a:["弦","弧","半径","直径"], c:"弦"},
+        {q:"【数学】球の表面積を求める公式は？", a:["4πr²","4/3πr³","πr²","2πr"], c:"4πr²"},
+        {q:"【数学】底面が半径r、高さhの円柱の体積は？", a:["πr²h","1/3πr²h","2πrh","2πr(r+h)"], c:"πr²h"},
+        {q:"【数学】全ての面が合同な正多角形で頂点に集まる面の数が等しい立体は？", a:["正多面体","正角柱","正角錐","回転体"], c:"正多面体"},
+        {q:"【数学】正三角形の面だけでできている正多面体は何種類？", a:["3種類","1種類","2種類","5種類"], c:"3種類"},
+        {q:"【数学】長方形を1回転させてできる立体は？", a:["円柱","円錐","球","正六面体"], b:"円柱", c:"円柱"},
+        {q:"【数学】空間で、1つの直線に垂直な2つの平面は？", a:["平行","垂直","ねじれの位置","1点を通る"], c:"平行"},
+        {q:"【数学】おうぎ形の面積の公式（中心角a）は？", a:["πr² × a/360","2πr × a/360","πr²","1/2πr"], c:"πr² × a/360"},
+        {q:"【美術】色相環で向かい合う位置にある色の関係は？", a:["補色","同系色","無彩色","類似色"], c:"補色"},
+        {q:"【美術】横線が細く、右端に「山（ウロコ）」がある書体は？", a:["明朝体","ゴシック体","楷書体","サンセリフ体"], c:"明朝体"},
+        {q:"【美術】線の太さがほぼ一定で、力強い印象の書体は？", a:["ゴシック体","明朝体","ローマン体","スクリプト体"], c:"ゴシック体"},
+        {q:"【美術】欧文レタリングで「飾り」がない書体は？", a:["サンセリフ体","ローマン体","イタリック体","ゴシック"], c:"サンセリフ体"},
+        {q:"【美術】色の三要素は、色相、明度、あと一つは？", a:["彩度","透明度","濃度","感度"], c:"彩度"},
+        {q:"【美術】最も明度が高い色（一番明るい色）は？", a:["白","黄","赤","金"], c:"白"},
+        {q:"【美術】14〜16世紀イタリアで起こった「再生」を意味する運動は？", a:["ルネサンス","バロック","印象派","ロココ"], c:"ルネサンス"},
+        {q:"【美術】レオナルド・ダ・ヴィンチの代表作は？", a:["モナ・リザ","ひまわり","叫び","最後の晩餐"], c:"モナ・リザ"},
+        {q:"【美術】レタリングの実技で、文字のバランスを整える範囲は？", a:["字面","中心線","外枠","ベースライン"], c:"字面"},
+        {q:"【美術】自分の感じたままに作品を受け取る鑑賞方法は？", a:["直感的な鑑賞","分析的な鑑賞","批判的な鑑賞","歴史的な鑑賞"], c:"直感的な鑑賞"}
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function show() {
+        const item = questions[current];
+        document.getElementById("status").innerText = `問 ${current + 1} / ${questions.length}`;
+        document.getElementById("question").innerText = item.q;
+        const ansDiv = document.getElementById("answers");
+        ansDiv.innerHTML = "";
+        item.a.forEach(txt => {
+            const b = document.createElement("button");
+            b.className = "btn";
+            b.innerText = txt;
+            b.onclick = () => check(b, txt);
+            ansDiv.appendChild(b);
+        });
+        document.getElementById("next-btn").style.display = "none";
+    }
+
+    function check(btn, val) {
+        const correct = questions[current].c;
+        const allButtons = document.querySelectorAll(".btn");
+        allButtons.forEach(b => b.style.pointerEvents = "none");
+
+        if(val === correct) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("wrong");
+            allButtons.forEach(b => { if(b.innerText === correct) b.classList.add("correct"); });
+        }
+        document.getElementById("next-btn").style.display = "block";
+    }
+
+    function nextQuestion() {
+        current++;
+        if(current < questions.length) {
+            show();
+        } else {
+            document.getElementById("app").innerHTML = `<h1>終了！結果は ${score}/${questions.length}</h1><button onclick="location.reload()" class="btn">もう一度やる</button>`;
+        }
+    }
+
+    show();
+</script>
+</body>
+</html>
