@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中1 学年末考査対策クイズ（数学・美術）</title>
+    <style>
+        :root { --primary-color: #3498db; --bg-color: #f0f4f8; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        #quiz-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; }
+        h1 { color: #2c3e50; font-size: 1.4rem; margin-bottom: 20px; border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; }
+        .progress { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 10px; }
+        .question { font-size: 1.1rem; color: #34495e; margin-bottom: 25px; line-height: 1.5; font-weight: bold; }
+        .option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ecf0f1; border-radius: 12px; cursor: pointer; text-align: left; background: #fff; font-size: 1rem; transition: all 0.2s ease; }
+        .option:hover { border-color: var(--primary-color); background-color: #ebf5fb; }
+        .option.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .option.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+        #result-area { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+        #hint-text { font-size: 0.85rem; color: #e67e22; background: #fef5e7; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
+        #next-btn { background
